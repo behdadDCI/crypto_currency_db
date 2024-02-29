@@ -170,6 +170,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
   if (!user) throw new Error("No User");
   user.access_token = undefined;
   await user.save();
+  res.clearCookie("accessToken")
   res.json({ message: "logout Successful" });
 });
 
