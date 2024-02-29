@@ -1,17 +1,17 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  secure: false,
   service: "gmail",
+  secure: false,
   auth: {
     user: "adelnamazi61@gmail.com",
-    pass: process.env.PASSMAIL,
+    pass: "aari ktsn ujve erwl",
   },
 });
 
 export const sendVerificationLinkToEmail = async (
   email: string,
-  firstName:string,
+  firstName: string,
   verifyToken: string
 ) => {
   let details = {
