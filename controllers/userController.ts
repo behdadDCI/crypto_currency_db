@@ -163,7 +163,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-export const logoutUser = asyncHandler(async (req, res) => {
+export const logoutUser = asyncHandler(async (req:Request, res:Response) => {
   const token = req.cookies.accessToken;
   if (!token) throw new Error("no token");
   const user = await Users.findOne({access_token:token});
