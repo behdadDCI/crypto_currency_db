@@ -2,17 +2,17 @@ import express from "express"
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
 import cors from "cors"
-import { dbConnect } from "./configs/dbConnect.ts"
-import userRouter from "./routes/userRouter.ts"
-import { errorHandler, notFound } from "./middlewares/error/errorHandler.ts"
+import { dbConnect } from "./configs/dbConnect"
+import userRouter from "./routes/userRouter"
+import { errorHandler, notFound } from "./middlewares/error/errorHandler"
 
 dotenv.config()
 dbConnect()
 
 const app=express()
-
+//adel
 app.use(express.json())
-app.use(cors({credentials:true,origin:"http://localhost:3000"}))
+app.use(cors({credentials:true,origin:"https://orosia.online"}))
 app.use(cookieParser())
 
 

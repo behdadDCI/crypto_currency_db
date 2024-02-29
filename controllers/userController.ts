@@ -1,10 +1,10 @@
 import asyncHandler from "express-async-handler";
 import randomBytes from "randombytes";
-import Users from "../models/userModel.ts";
+import Users from "../models/userModel";
 import jwt from "jsonwebtoken";
-import { sendVerificationLinkToEmail } from "./email/sendEmail.ts";
+import { sendVerificationLinkToEmail } from "./email/sendEmail";
 import { jwtDecode } from "jwt-decode";
-import { IUser } from "../interface/index.ts";
+import { IUser } from "../interface/index";
 import { Request, Response } from "express";
 
 export const registerUser = asyncHandler(
