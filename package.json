@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon"
+    "dev": "nodemon",
+    "start": "vite serve --host --port 3010",
+    "setup": "npm i && pm2 start --name crypto_currency_db npm -- start --update-env --time && pm2 save",
+    "deploy": "git pull --no-rebase && pm2 restart crypto_currency_db --update-env --time && pm2 save"
   },
   "nodemonConfig": {
     "watch": [

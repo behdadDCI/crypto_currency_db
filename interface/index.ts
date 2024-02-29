@@ -1,4 +1,5 @@
 export interface IUser {
+  userId:string;
   firstName: string;
   lastName: string;
   gender: string;
@@ -18,5 +19,5 @@ export interface IUser {
   access_token: string;
   randomVerifyAccountToken: string;
   isPasswordMatched: Function;
-  photo:string;
+
 }

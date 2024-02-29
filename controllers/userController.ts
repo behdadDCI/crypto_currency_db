@@ -149,19 +149,22 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     });
 
     const decode = jwtDecode<IUser>(accessToken);
-    const userInfo = {
-      firstName: decode.firstName,
-      lastName: decode.lastName,
-      photo: decode.photo,
-      isAccountVerified:decode.isAccountVerified
-    };
 
     res.json({
       message: "Login successful",
       token: refreshToken,
-      userInfo: userInfo,
+      userId: decode.userId,
     });
-  }else{
-    throw new Error("Invalid username or password")
+  } else {
+    throw new Error("Invalid username or password");
+  }
+});
+
+export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+  try {
+    const users = await Users.find();
+    res.json(users);
+  } catch (error) {
+    res.json(error);
   }
 });
