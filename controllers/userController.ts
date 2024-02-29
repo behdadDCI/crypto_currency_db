@@ -34,7 +34,7 @@ export const registerUser = asyncHandler(
       httpOnly: true,
       maxAge: 15 * 60 * 1000,
       secure: true,
-      sameSite:"lax"
+      sameSite: "lax",
     });
 
     await sendVerificationLinkToEmail(
@@ -92,7 +92,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         httpOnly: true,
         maxAge: 15 * 60 * 1000,
         secure: true,
-        sameSite:"lax"
+        sameSite: "lax",
       });
 
       await sendVerificationLinkToEmail(
@@ -148,7 +148,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       secure: true,
-      sameSite:"lax"
+      sameSite: "lax",
     });
 
     const decode = jwtDecode<IUser>(accessToken);
@@ -161,6 +161,16 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   } else {
     throw new Error("Invalid username or password");
   }
+});
+
+export const logoutUser = asyncHandler(async (req, res) => {
+  const token = req.cookies.accessToken;
+  if (!token) throw new Error("no token");
+  const user = await Users.findOne(token);
+  if (!user) throw new Error("No User");
+  user.access_token = undefined;
+  await user.save();
+  res.json({ message: "logout Successful" });
 });
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
