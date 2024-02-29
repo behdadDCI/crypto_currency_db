@@ -1,7 +1,9 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service:'gmail',
+  host:'orosia.online',
+  port:465,
+  secure:true,
   auth: {
     user: "adelnamazi61@gmail.com",
     pass: "zksm btll tjws abf",
