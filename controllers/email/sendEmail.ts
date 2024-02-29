@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 const transporter = nodemailer.createTransport({
   auth: {
     user: "adelnamazi61@gmail.com",
-    pass: "aari ktsn ujve erwl",
+    pass: "zksm btll tjws abf",
   },
 });
 
