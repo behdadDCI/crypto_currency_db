@@ -20,7 +20,7 @@ export const sendVerificationLinkToEmail = async (
     <img src="https://cdn-icons-png.flaticon.com/512/5309/5309779.png" alt="brand" width="30" height="30"/>
       <p>Dear ${firstName}</p>
       <p>Thank you for signing up. Please click the following link to verify your account:</p>
-      <a href="https://orosia.online/api/verify_account/${verifyToken}?email=${email}">Verify Account</a>
+      <a href="http://orosia.online/api/verify_account/${verifyToken}?email=${email}">Verify Account</a>
       <p>If you did not sign up, please ignore this email.</p>
       <p>Best Regards,<br/>Your Website Team</p>
     `,
