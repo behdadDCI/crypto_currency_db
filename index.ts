@@ -12,7 +12,7 @@ dbConnect()
 const app=express()
 //adel
 app.use(express.json())
-app.use(cors({credentials:true,origin:"orosia.online"}))
+app.use(cors({credentials:true,origin:"https://orosia.online"}))
 app.use(cookieParser())
 
 
