@@ -166,7 +166,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 export const logoutUser = asyncHandler(async (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) throw new Error("no token");
-  const user = await Users.findOne({token});
+  const user = await Users.findOne({access_token:token});
   if (!user) throw new Error("No User");
   user.access_token = undefined;
   await user.save();
