@@ -1,10 +1,13 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
+  host: "orosia.online",
+  port: 587,
+  secure: false,
   service: "gmail",
   auth: {
     user: "adelnamazi61@gmail.com",
-    pass: "aari ktsn ujve erwl",
+    pass: process.env.PASSMAIL,
   },
 });
 
