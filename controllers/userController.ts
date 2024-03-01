@@ -13,7 +13,7 @@ export const registerUser = asyncHandler(
       req.body;
     const existEmail = await Users.findOne({ email });
     if (existEmail)
-      throw new Error("Oops! Looks like this email is already in our system");
+      throw new Error("Oops! Looks like this email is already in our Database");
     if (password !== confirmPassword)
       throw new Error("Password and Confirm Password do not match.");
 
