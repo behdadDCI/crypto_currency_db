@@ -8,7 +8,7 @@ import { IUser } from "../interface/index";
 import { Request, Response } from "express";
 
 export const registerUser = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req:Request, res: Response) => {
     const { firstName, lastName, email, password, confirmPassword, gender } =
       req.body;
     const existEmail = await Users.findOne({ email });
