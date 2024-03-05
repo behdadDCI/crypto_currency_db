@@ -24,5 +24,5 @@ router.post(
 );
 router.put("/api/v1/verify-account",accountVerification)
 
-router.get("/api/v1/users", verifyToken, getAllUsers);
+router.get("/api/v1/users", getAllUsers);
 export default router;
