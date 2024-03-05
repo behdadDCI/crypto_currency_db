@@ -1,14 +1,19 @@
 import asyncHandler from "express-async-handler";
-import randomBytes from "randombytes";
 import Users from "../models/userModel";
 import jwt from "jsonwebtoken";
-import { sendVerificationLinkToEmail } from "./email/sendEmail";
 import { jwtDecode } from "jwt-decode";
 import { IUser } from "../interface/index";
 import { Request, Response } from "express";
+import { sendVerificationLinkToEmail } from "./email/sendEmail";
+import crypto from "crypto";
 
+interface CustomRequest extends Request {
+  userId?: IUser;
+}
+
+// Register User
 export const registerUser = asyncHandler(
-  async (req:Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const { firstName, lastName, email, password, confirmPassword, gender } =
       req.body;
     const existEmail = await Users.findOne({ email });
@@ -17,97 +22,29 @@ export const registerUser = asyncHandler(
     if (password !== confirmPassword)
       throw new Error("Password and Confirm Password do not match.");
 
-    await Users.create({ firstName, lastName, email, password, gender });
-    const randomVerifyAccountToken = randomBytes(16).toString("hex");
-    const verifyToken = jwt.sign(
-      {
-        email,
-        randomVerifyAccountToken,
-      },
-      process.env.VERIFY_TOKEN_SECRET as string,
-      {
-        expiresIn: "15m",
-      }
-    );
-
-    res.cookie("verifyAccount", verifyToken, {
-      httpOnly: true,
-      maxAge: 15 * 60 * 1000,
-      secure: true,
-      sameSite: "lax",
-    });
-
-    await sendVerificationLinkToEmail(
-      email,
-      firstName,
-      randomVerifyAccountToken
-    );
-    res.status(201).json({
-      message: "You have successfully registered.",
-      token: randomVerifyAccountToken,
-    });
-  }
-);
-
-export const verifyAccount = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { token } = req.params;
-    const verifyAccount = req.cookies.verifyAccount;
-    if (!verifyAccount) throw new Error("Invalid link.");
-    const decoded = jwtDecode<IUser>(verifyAccount);
-    const email = decoded.email;
-    const randomVerifyAccountToken = decoded.randomVerifyAccountToken;
-    console.log("randomVerifyAccountToken", randomVerifyAccountToken);
-    if (token !== randomVerifyAccountToken) {
-      throw new Error("token ist üngultig");
+    try {
+      await Users.create({ firstName, lastName, email, password, gender });
+      res.json({
+        message: "You have successfully registered.",
+      });
+      console.log("Try");
+    } catch (error) {
+      console.log("Catch");
+      res.json(error);
     }
-    const user = await Users.findOne({ email });
-    if (!user) throw new Error("You must register first.");
-    user.isAccountVerified = true;
-    await user.save();
-    res
-      .status(200)
-      .json({ success: true, message: "Account verified successfully." });
   }
 );
 
+// Login User
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const userFound = await Users.findOne({ email });
   if (userFound && (await userFound.isPasswordMatched(password))) {
-    if (!userFound.isAccountVerified) {
-      const randomVerifyAccountToken = randomBytes(16).toString("hex");
-      const verifyToken = jwt.sign(
-        {
-          email,
-          randomVerifyAccountToken,
-        },
-        process.env.VERIFY_TOKEN_SECRET as string,
-        {
-          expiresIn: "15m",
-        }
-      );
-
-      res.cookie("verifyAccount", verifyToken, {
-        httpOnly: true,
-        maxAge: 15 * 60 * 1000,
-        secure: true,
-        sameSite: "lax",
-      });
-
-      await sendVerificationLinkToEmail(
-        email,
-        userFound.firstName,
-        randomVerifyAccountToken
-      );
-      throw new Error(
-        "A verification link has been sent to your email for account activation."
-      );
-    }
     const {
       _id: userId,
       firstName,
       lastName,
+      email,
       isAccountVerified,
       isAdmin,
       profile_photo: photo,
@@ -147,8 +84,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-      secure: true,
-      sameSite: "lax",
+      secure: false,
     });
 
     const decode = jwtDecode<IUser>(accessToken);
@@ -163,17 +99,48 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-export const logoutUser = asyncHandler(async (req:Request, res:Response) => {
+// Logout User
+export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   const token = req.cookies.accessToken;
   if (!token) throw new Error("no token");
-  const user = await Users.findOne({access_token:token});
+  const user = await Users.findOne({ access_token: token });
   if (!user) throw new Error("No User");
   user.access_token = undefined;
   await user.save();
-  res.clearCookie("accessToken")
+  res.clearCookie("accessToken");
   res.json({ message: "logout Successful" });
 });
 
+export const verifyUserEmail = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const loginUserId = req.userId;
+    const user = await Users.findById(loginUserId);
+    if (!user) throw new Error("");
+
+    const verificationToken = await user.createAccountVerificationToken();
+    await user.save();
+    sendVerificationLinkToEmail(user.email, user.firstName, verificationToken);
+    res.json({ message: "email gesendet" });
+  }
+);
+
+export const accountVerification = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+  console.log(token);
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const userFound = await Users.findOne({
+    accountVerificationToken: hashedToken,
+    accountVerificationTokenExpires: { $gt: new Date() },
+  });
+  if (!userFound) throw new Error("");
+  userFound.isAccountVerified=true;
+  userFound.accountVerificationToken=undefined;
+  userFound.accountVerificationTokenExpires=undefined
+  await userFound.save()
+  res.json()
+});
+
+// Get All Users
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   try {
     const users = await Users.find();

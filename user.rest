@@ -1,1 +1,0 @@
-GET http://localhost:3005/api/verify_account/bf759e3e1ae85010c38914b9e647cdd1

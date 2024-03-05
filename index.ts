@@ -5,6 +5,7 @@ import cors from "cors"
 import { dbConnect } from "./configs/dbConnect"
 import userRouter from "./routes/userRouter"
 import { errorHandler, notFound } from "./middlewares/error/errorHandler"
+import apiRouter from "./routes/apiRouter"
 
 dotenv.config()
 dbConnect()
@@ -12,11 +13,12 @@ dbConnect()
 const app=express()
 //adel
 app.use(express.json())
-app.use(cors({credentials:true,origin:"https://orosia.online"}))
+ app.use(cors({credentials:true,origin:"http://localhost:3000"}))
 app.use(cookieParser())
 
 
 app.use(userRouter)
+app.use(apiRouter)
 
 app.use(notFound)
 app.use(errorHandler)

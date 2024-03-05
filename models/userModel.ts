@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { IUser } from "../interface";
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -49,6 +50,8 @@ const userSchema = new mongoose.Schema<IUser>(
       type: Boolean,
       default: false,
     },
+    accountVerificationToken: String,
+    accountVerificationTokenExpires: Date,
     viewedBy: {
       type: [
         {
@@ -110,6 +113,16 @@ userSchema.methods.isPasswordMatched = async function (
   enteredPassword: string
 ) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+userSchema.methods.createAccountVerificationToken = async function () {
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+  this.accountVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
+  this.accountVerificationTokenExpires = Date.now() + 30 * 60 * 1000;
+  return verificationToken;
 };
 
 const Users = mongoose.model("User", userSchema);
