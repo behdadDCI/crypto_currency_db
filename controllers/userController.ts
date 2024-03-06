@@ -92,7 +92,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     res.json({
       message: "Login successful",
       token: refreshToken,
-      userId: decode.userId,
+      userInfo: decode,
     });
   } else {
     throw new Error("Invalid username or password");
@@ -120,24 +120,25 @@ export const verifyUserEmail = asyncHandler(
     const verificationToken = await user.createAccountVerificationToken();
     await user.save();
     sendVerificationLinkToEmail(user.email, user.firstName, verificationToken);
-    res.json({ message: "email gesendet" });
+    res.json({ message: "email gesendet",verificationToken });
   }
 );
 
 export const accountVerification = asyncHandler(async (req, res) => {
   const { token } = req.body;
-  console.log(token);
+  console.log("token", typeof token);
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  console.log(hashedToken)
   const userFound = await Users.findOne({
     accountVerificationToken: hashedToken,
     accountVerificationTokenExpires: { $gt: new Date() },
   });
-  if (!userFound) throw new Error("");
+  if (!userFound) throw new Error("no user");
   userFound.isAccountVerified=true;
   userFound.accountVerificationToken=undefined;
   userFound.accountVerificationTokenExpires=undefined
   await userFound.save()
-  res.json()
+  res.json({message:"alles gut"})
 });
 
 // Get All Users
