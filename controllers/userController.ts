@@ -23,8 +23,16 @@ export const registerUser = asyncHandler(
       throw new Error("Password and Confirm Password do not match.");
 
     try {
-      await Users.create({ firstName, lastName, email, password, gender });
+      const user = await Users.create({
+        firstName,
+        lastName,
+        email,
+        password,
+        gender,
+      });
+
       res.json({
+        user: user,
         message: "You have successfully registered.",
       });
       console.log("Try");
@@ -79,13 +87,15 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         expiresIn: "30s",
       }
     );
-    await Users.findByIdAndUpdate(userId, { access_token: accessToken });
+    const user = await Users.findByIdAndUpdate(userId, {
+      access_token: accessToken,
+    });
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       secure: true,
-      sameSite:"none"
+      sameSite: "none",
     });
 
     const decode = jwtDecode<IUser>(accessToken);
@@ -94,6 +104,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
       message: "Login successful",
       token: refreshToken,
       userInfo: decode,
+      user: user,
     });
   } else {
     throw new Error("Invalid username or password");
@@ -121,7 +132,7 @@ export const verifyUserEmail = asyncHandler(
     const verificationToken = await user.createAccountVerificationToken();
     await user.save();
     sendVerificationLinkToEmail(user.email, user.firstName, verificationToken);
-    res.json({ message: "email gesendet",verificationToken });
+    res.json({ message: "email gesendet", verificationToken });
   }
 );
 
@@ -129,17 +140,17 @@ export const accountVerification = asyncHandler(async (req, res) => {
   const { token } = req.body;
   console.log("token", typeof token);
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-  console.log(hashedToken)
+  console.log(hashedToken);
   const userFound = await Users.findOne({
     accountVerificationToken: hashedToken,
     accountVerificationTokenExpires: { $gt: new Date() },
   });
   if (!userFound) throw new Error("no user");
-  userFound.isAccountVerified=true;
-  userFound.accountVerificationToken=undefined;
-  userFound.accountVerificationTokenExpires=undefined
-  await userFound.save()
-  res.json({message:"alles gut"})
+  userFound.isAccountVerified = true;
+  userFound.accountVerificationToken = undefined;
+  userFound.accountVerificationTokenExpires = undefined;
+  await userFound.save();
+  res.json({ message: "alles gut" });
 });
 
 // Get All Users
