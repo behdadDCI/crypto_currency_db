@@ -6,6 +6,7 @@ import { dbConnect } from "./configs/dbConnect"
 import userRouter from "./routes/userRouter"
 import { errorHandler, notFound } from "./middlewares/error/errorHandler"
 import apiRouter from "./routes/apiRouter"
+import coinRouter from "./routes/coinRouter"
 
 dotenv.config()
 dbConnect()
@@ -19,6 +20,7 @@ app.use(cookieParser())
 
 app.use(userRouter)
 app.use(apiRouter)
+app.use(coinRouter)
 
 app.use(notFound)
 app.use(errorHandler)
