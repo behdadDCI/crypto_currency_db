@@ -162,3 +162,13 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
     res.json(error);
   }
 });
+
+export const profilePhotoUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      console.log("first");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);

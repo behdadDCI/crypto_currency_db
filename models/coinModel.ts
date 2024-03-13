@@ -5,7 +5,7 @@ const coinSchema = new mongoose.Schema({
     type: String,
   },
   symbol: {
-   type : String,
+    type: String,
   },
   name: {
     type: String,
@@ -20,7 +20,7 @@ const coinSchema = new mongoose.Schema({
     type: Number,
   },
   market_cap_rank: {
-   type : Number,
+    type: Number,
   },
   fully_diluted_valuation: {
     type: Number,
@@ -35,7 +35,7 @@ const coinSchema = new mongoose.Schema({
     type: Number,
   },
   price_change_24h: {
-   type : Number,
+    type: Number,
   },
   price_change_percentage_24h: {
     type: Number,
@@ -50,7 +50,7 @@ const coinSchema = new mongoose.Schema({
     type: Number,
   },
   total_supply: {
-   type : Number,
+    type: Number,
   },
   max_supply: {
     type: Number,
@@ -71,13 +71,27 @@ const coinSchema = new mongoose.Schema({
     type: Number,
   },
   atl_date: {
-   type : Date,
+    type: Date,
   },
   roi: {
     type: Object,
   },
   last_updated: {
     type: Date,
+  },
+  sparkline_in_7d: {
+    type: {
+      price: [],
+    },
+  },
+  price_change_percentage_1h_in_currency: {
+    type: Number,
+  },
+  price_change_percentage_24h_in_currency: {
+    type: Number,
+  },
+  price_change_percentage_7d_in_currency: {
+    type: Number,
   },
 });
 

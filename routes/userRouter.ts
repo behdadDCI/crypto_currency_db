@@ -4,11 +4,13 @@ import {
   getAllUsers,
   loginUser,
   logoutUser,
+  profilePhotoUser,
   registerUser,
   verifyUserEmail,
 } from "../controllers/userController";
 import { verifyToken } from "../middlewares/token/verifyToken";
 import { refreshToken } from "../controllers/refreshToken";
+import { photoUpload, profilePhotoResize } from "../middlewares/upload/photoUpload";
 
 const router = express.Router();
 
@@ -22,7 +24,15 @@ router.post(
   verifyToken,
   verifyUserEmail
 );
-router.put("/api/v1/verify-account",accountVerification)
+router.put("/api/v1/verify-account", accountVerification);
 
-router.get("/api/v1/users",getAllUsers);
+router.get("/api/v1/users", getAllUsers);
+router.put(
+  "/api/v1/users/profile_photo_upload",
+  verifyToken,
+  photoUpload.single("image"),
+  profilePhotoResize,
+  profilePhotoUser
+);
+
 export default router;

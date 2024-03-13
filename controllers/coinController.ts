@@ -17,7 +17,7 @@ export const getAllCoins = asyncHandler(async (req:Request, res:Response) => {
 export const createCoins = asyncHandler(async (req:Request, res:Response) => {
   try {
     const response = await axios.get(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false&locale=en"
+      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d&locale=en"
     );
     const coinsData = response.data;
 
@@ -30,7 +30,7 @@ export const createCoins = asyncHandler(async (req:Request, res:Response) => {
 export const updateCoins = asyncHandler(async (req:Request, res:Response) => {
   try {
     const response = await axios.get(
-      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false&locale=en"
+      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d&locale=en"
     );
     const coinsData = response.data;
     for (const coin of coinsData) {
