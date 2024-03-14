@@ -164,11 +164,20 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const profilePhotoUser = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: CustomRequest, res: Response) => {
     try {
-      console.log("first");
+      const userId = req.userId;
+      const localPath = `public/images/profile/${req.file.filename}`;
+      const foundUser = await Users.findByIdAndUpdate(
+        userId,
+        {
+          profile_photo: `https://crypto-currency-db.orosia.online/${localPath}`,
+        },
+        { new: true }
+      );
+      res.json(foundUser);
     } catch (error) {
-      console.log(error);
+      res.json(error);
     }
   }
 );
