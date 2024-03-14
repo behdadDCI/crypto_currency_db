@@ -27,6 +27,7 @@ router.post(
 router.put("/api/v1/verify-account", accountVerification);
 
 router.get("/api/v1/users", getAllUsers);
+
 router.put(
   "/api/v1/users/profile_photo_upload",
   verifyToken,
