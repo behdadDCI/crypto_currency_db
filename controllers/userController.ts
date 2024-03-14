@@ -97,7 +97,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
     });
 
     const decode = jwtDecode<IUser>(accessToken);
