@@ -5,7 +5,9 @@ import { jwtDecode } from "jwt-decode";
 import { IUser } from "../interface/index";
 import { Request, Response } from "express";
 import { sendVerificationLinkToEmail } from "./email/sendEmail";
+import { cloudinaryUploadImage } from "../utils/cloudinary";
 import crypto from "crypto";
+import fs from "fs"
 
 interface CustomRequest extends Request {
   userId?: IUser;
@@ -168,13 +170,15 @@ export const profilePhotoUser = asyncHandler(
     try {
       const userId = req.userId;
       const localPath = `public/images/profile/${req.file.filename}`;
+      const imageUploaded = await cloudinaryUploadImage(localPath);
       const foundUser = await Users.findByIdAndUpdate(
         userId,
         {
-          profile_photo: `https://crypto-currency-db.orosia.online/${localPath}`,
+          profile_photo: imageUploaded.url,
         },
         { new: true }
       );
+      fs.unlinkSync(localPath)
       res.json(foundUser);
     } catch (error) {
       res.json(error);
