@@ -7,7 +7,7 @@ import { Request, Response } from "express";
 import { sendVerificationLinkToEmail } from "./email/sendEmail";
 import { cloudinaryUploadImage } from "../utils/cloudinary";
 import crypto from "crypto";
-import fs from "fs"
+import fs from "fs";
 
 interface CustomRequest extends Request {
   userId?: IUser;
@@ -178,8 +178,8 @@ export const profilePhotoUser = asyncHandler(
         },
         { new: true }
       );
-      fs.unlinkSync(localPath)
-      res.json(foundUser);
+      fs.unlinkSync(localPath);
+      res.json({ message: "success", foundUser });
     } catch (error) {
       res.json(error);
     }
