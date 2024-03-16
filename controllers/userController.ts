@@ -100,6 +100,13 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
       sameSite: "none",
     });
 
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: true,
+      sameSite: "lax",
+    });
+
     const decode = jwtDecode<IUser>(accessToken);
 
     res.json({
@@ -171,7 +178,7 @@ export const profilePhotoUser = asyncHandler(
       const userId = req.userId;
       const localPath = `public/images/profile/${req.file.filename}`;
       const imageUploaded = await cloudinaryUploadImage(localPath);
-      const foundUser = await Users.findByIdAndUpdate(
+      const user = await Users.findByIdAndUpdate(
         userId,
         {
           profile_photo: imageUploaded.url,
@@ -179,7 +186,23 @@ export const profilePhotoUser = asyncHandler(
         { new: true }
       );
       fs.unlinkSync(localPath);
-      res.json({ message: "success", foundUser });
+      res.json({ message: "success", user: user });
+    } catch (error) {
+      res.json(error);
+    }
+  }
+);
+
+export const accessTokenExpired = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const token = req.cookies.accessToken;
+      if (!token) throw new Error("no token");
+
+      if (token.expiresIn < Date.now()) throw new Error("token expired");
+
+      const user = await Users.findOne({ access_token: token });
+      res.json({user:user, message: "token is valid" });
     } catch (error) {
       res.json(error);
     }

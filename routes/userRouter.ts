@@ -7,15 +7,19 @@ import {
   profilePhotoUser,
   registerUser,
   verifyUserEmail,
+  accessTokenExpired,
 } from "../controllers/userController";
 import { verifyToken } from "../middlewares/token/verifyToken";
 import { refreshToken } from "../controllers/refreshToken";
-import { photoUpload, profilePhotoResize } from "../middlewares/upload/photoUpload";
+import {
+  photoUpload,
+  profilePhotoResize,
+} from "../middlewares/upload/photoUpload";
 
 const router = express.Router();
 
 router.get("/api/v1/token", refreshToken);
-
+router.get("/api/v1/check-token", accessTokenExpired);
 router.post("/api/v1/register", registerUser);
 router.post("/api/v1/login", loginUser);
 router.delete("/api/v1/logout", logoutUser);
