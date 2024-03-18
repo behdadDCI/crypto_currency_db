@@ -10,7 +10,8 @@ export const verifyToken = (
   res: Response,
   next: Function
 ) => {
-  const authHeader = req.headers["authorization"];
+  const authHeader = req.headers?.authorization;
+  console.log("authHeader: ",authHeader)
 
     const token = authHeader && authHeader.toString().split(" ")[1];
     if (!token) throw new Error("Token not provided");
