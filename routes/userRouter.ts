@@ -8,6 +8,7 @@ import {
   registerUser,
   verifyUserEmail,
   accessTokenExpired,
+  editProfileInfo,
 } from "../controllers/userController";
 import { verifyToken } from "../middlewares/token/verifyToken";
 import { refreshToken } from "../controllers/refreshToken";
@@ -39,5 +40,7 @@ router.put(
   profilePhotoResize,
   profilePhotoUser
 );
+
+router.put("/api/v1/users/edit_profile_info", verifyToken, editProfileInfo);
 
 export default router;

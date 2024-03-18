@@ -96,8 +96,8 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
-       secure: true,
-       sameSite: "lax",
+      //  secure: true,
+      //  sameSite: "lax",
     });
 
     const decode = jwtDecode<IUser>(accessToken);
@@ -199,3 +199,20 @@ export const accessTokenExpired = asyncHandler(
     }
   }
 );
+
+// Edit User Info
+export const editProfileInfo = asyncHandler(async (req:CustomRequest, res:Response) => {
+  try {
+    const { firstName, lastName, gender, bio } = req.body;
+    const loginUserId = req.userId;
+    await Users.findByIdAndUpdate(loginUserId, {
+      firstName,
+      lastName,
+      gender,
+      bio,
+    });
+    res.json({ message: "Profile information updated successfully." });
+  } catch (error) {
+    res.json(error);
+  }
+});
