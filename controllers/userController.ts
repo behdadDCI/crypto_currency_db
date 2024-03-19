@@ -230,9 +230,9 @@ export const editProfileInfo = asyncHandler(
 export const changePassword = asyncHandler(
   async (req: CustomRequest, res: Response) => {
     const userId = req.userId;
-    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const { password, newPassword, confirmPassword } = req.body;
     const user = await Users.findById(userId);
-    if (await user.isPasswordMatched(currentPassword)) {
+    if (await user.isPasswordMatched(password)) {
       if (newPassword !== confirmPassword) {
         throw new Error("Password and Confirm Password do not match.");
       }
