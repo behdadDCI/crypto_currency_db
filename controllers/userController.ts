@@ -225,3 +225,22 @@ export const editProfileInfo = asyncHandler(
     }
   }
 );
+
+//CHANGE PASSWORD WENN USER IST LOGIN
+export const changePassword = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const userId = req.userId;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const user = await Users.findById(userId);
+    if (await user.isPasswordMatched(currentPassword)) {
+      if (newPassword !== confirmPassword) {
+        throw new Error("Password and Confirm Password do not match.");
+      }
+      user.password = newPassword;
+      await user.save();
+      res.json({ message: "Your password has been successfully changed." });
+    } else {
+      throw new Error("Please enter your password correctly");
+    }
+  }
+);

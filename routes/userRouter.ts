@@ -9,6 +9,7 @@ import {
   verifyUserEmail,
   accessTokenExpired,
   editProfileInfo,
+  changePassword,
 } from "../controllers/userController";
 import { verifyToken } from "../middlewares/token/verifyToken";
 import { refreshToken } from "../controllers/refreshToken";
@@ -42,5 +43,7 @@ router.put(
 );
 
 router.put("/api/v1/users/edit_profile_info", verifyToken, editProfileInfo);
+
+router.put("/api/v1/users/change_password", verifyToken, changePassword);
 
 export default router;
