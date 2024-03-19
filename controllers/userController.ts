@@ -193,7 +193,7 @@ export const accessTokenExpired = asyncHandler(
       if (!token) throw new Error("user ist nicht mehr loggin");
 
       const user = await Users.findOne({ access_token: token });
-      res.json({user:user, message: "user is loggin" });
+      res.json({ user: user, message: "user is loggin" });
     } catch (error) {
       res.json(error);
     }
@@ -201,18 +201,27 @@ export const accessTokenExpired = asyncHandler(
 );
 
 // Edit User Info
-export const editProfileInfo = asyncHandler(async (req:CustomRequest, res:Response) => {
-  try {
-    const { firstName, lastName, gender, bio } = req.body;
-    const loginUserId = req.userId;
-    await Users.findByIdAndUpdate(loginUserId, {
-      firstName,
-      lastName,
-      gender,
-      bio,
-    });
-    res.json({ message: "Profile information updated successfully." });
-  } catch (error) {
-    res.json(error);
+export const editProfileInfo = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    try {
+      const { firstName, lastName, gender, bio } = req.body;
+      const userId = req.userId;
+      const user = await Users.findByIdAndUpdate(
+        userId,
+        {
+          firstName,
+          lastName,
+          gender,
+          bio,
+        },
+        { new: true }
+      );
+      res.json({
+        user: user,
+        message: "Profile information updated successfully.",
+      });
+    } catch (error) {
+      res.json(error);
+    }
   }
-});
+);
