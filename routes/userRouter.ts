@@ -10,6 +10,8 @@ import {
   accessTokenExpired,
   editProfileInfo,
   changePassword,
+  followUser,
+  unFollowUser,
 } from "../controllers/userController";
 import { verifyToken } from "../middlewares/token/verifyToken";
 import { refreshToken } from "../controllers/refreshToken";
@@ -45,5 +47,9 @@ router.put(
 router.put("/api/v1/users/edit_profile_info", verifyToken, editProfileInfo);
 
 router.put("/api/v1/users/change_password", verifyToken, changePassword);
+
+// Follow And unFollow
+router.post("/api/v1/users/follow", verifyToken, followUser);
+router.post("/api/v1/users/unfollow", verifyToken, unFollowUser);
 
 export default router;

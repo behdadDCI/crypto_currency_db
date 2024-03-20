@@ -244,3 +244,64 @@ export const changePassword = asyncHandler(
     }
   }
 );
+
+// Follow User
+export const followUser = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const loginUserId = req.userId;
+    const targetUserId = req.body.targetUserId;
+    const targetUser = await Users.findById(targetUserId);
+    const followers = targetUser.followers.find(
+      (user: string) => user.toString() === loginUserId.toString()
+    );
+    if (followers) throw new Error("You are already following this user.");
+    const targetUserFollow = await Users.findByIdAndUpdate(
+      targetUserId,
+      {
+        $push: { followers: loginUserId },
+        isFollowing: true,
+      },
+      { new: true }
+    );
+    const loginUserFollow = await Users.findByIdAndUpdate(
+      loginUserId,
+      {
+        $push: { following: targetUserId },
+      },
+      { new: true }
+    );
+    res.json({
+      user: [targetUserFollow, loginUserFollow],
+      message: "You are now following the user.",
+    });
+  }
+);
+
+// UnFollow User
+export const unFollowUser = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const loginUserId = req.userId;
+    const targetUserId = req.body.targetUserId;
+    const targetUser = await Users.findById(targetUserId);
+    const followers = targetUser.followers.find(
+      (user: string) => user.toString() === loginUserId.toString()
+    );
+    if (!followers) throw new Error("You are not following this user.");
+    const targetUserFollow = await Users.findByIdAndUpdate(
+      targetUserId,
+      {
+        $pull: { followers: loginUserId },
+        isFollowing: false,
+      },
+      { new: true }
+    );
+  const loginUserFollow=  await Users.findByIdAndUpdate(
+      loginUserId,
+      {
+        $pull: { following: targetUserId },
+      },
+      { new: true }
+    );
+    res.json({ user: [targetUserFollow,loginUserFollow], message: "You have unfollowed the user." });
+  }
+);
