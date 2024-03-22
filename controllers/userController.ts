@@ -9,9 +9,11 @@ import { cloudinaryUploadImage } from "../utils/cloudinary";
 import crypto from "crypto";
 import fs from "fs";
 
+
 interface CustomRequest extends Request {
   userId?: IUser;
 }
+
 
 // Register User
 export const registerUser = asyncHandler(
@@ -37,7 +39,6 @@ export const registerUser = asyncHandler(
         user: user,
         message: "You have successfully registered.",
       });
-      console.log("Try");
     } catch (error) {
       console.log("Catch");
       res.json(error);
@@ -295,13 +296,32 @@ export const unFollowUser = asyncHandler(
       },
       { new: true }
     );
-  const loginUserFollow=  await Users.findByIdAndUpdate(
+    const loginUserFollow = await Users.findByIdAndUpdate(
       loginUserId,
       {
         $pull: { following: targetUserId },
       },
       { new: true }
     );
-    res.json({ user: [targetUserFollow,loginUserFollow], message: "You have unfollowed the user." });
+    res.json({
+      user: [targetUserFollow, loginUserFollow],
+      message: "You have unfollowed the user.",
+    });
+  }
+);
+
+// Delete Account
+export const deleteAccount = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const loginUserId = req.userId;
+    const {targetUserId} = req.params;
+
+    const loginUser = await Users.findById(loginUserId);
+    if (loginUser.isAdmin || loginUserId.toString() === targetUserId) {
+      await Users.findByIdAndDelete(targetUserId);
+      res.json({ message: "Account successfully deleted." });
+    } else {
+      throw new Error("You do not have permission to delete this account.");
+    }
   }
 );

@@ -12,6 +12,7 @@ import {
   changePassword,
   followUser,
   unFollowUser,
+  deleteAccount,
 } from "../controllers/userController";
 import { verifyToken } from "../middlewares/token/verifyToken";
 import { refreshToken } from "../controllers/refreshToken";
@@ -22,17 +23,23 @@ import {
 
 const router = express.Router();
 
+// NEW TOKEN, CHECK TOKEN
 router.get("/api/v1/token", refreshToken);
 router.get("/api/v1/check-token", accessTokenExpired);
+
+//LOGIN REGISTER LOGOUT
 router.post("/api/v1/register", registerUser);
 router.post("/api/v1/login", loginUser);
 router.delete("/api/v1/logout", logoutUser);
+
+
 router.post(
   "/api/v1/generate-verify-email-token",
   verifyToken,
   verifyUserEmail
 );
 router.put("/api/v1/verify-account", accountVerification);
+router.delete("/api/v1/delete-account/:targetUserId", verifyToken, deleteAccount);
 
 router.get("/api/v1/users", getAllUsers);
 
