@@ -7,6 +7,7 @@ import userRouter from "./routes/userRouter";
 import { errorHandler, notFound } from "./middlewares/error/errorHandler";
 import coinRouter from "./routes/coinRouter";
 import postRouter from "./routes/postRouter";
+import categoryRouter from "./routes/categoryRouter";
 
 dotenv.config();
 dbConnect();
@@ -20,6 +21,7 @@ app.use(cookieParser());
 app.use(userRouter);
 app.use(coinRouter);
 app.use(postRouter);
+app.use(categoryRouter);
 
 app.use(notFound);
 app.use(errorHandler);
