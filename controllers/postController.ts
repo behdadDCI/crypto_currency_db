@@ -30,11 +30,11 @@ export const createPost = asyncHandler(
     blockUser(userData);
     verifyUser(userData);
     const { title, description } = req.body;
-console.log(req.body)
+    console.log(req.body);
     const localPath = `public/images/posts/${req.file.filename}`;
-console.log("localPath: ",localPath)
+    console.log("localPath: ", localPath);
     const imageUploaded = await cloudinaryUploadImage(localPath);
-    console.log("imageUploaded: ",imageUploaded)
+    console.log("imageUploaded: ", imageUploaded);
     try {
       const post = await Posts.create({
         user: userId,

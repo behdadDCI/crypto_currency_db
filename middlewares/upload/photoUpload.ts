@@ -45,11 +45,41 @@ export const postPhotoResize = async (
   next: Function
 ) => {
   if (!req.file) return next();
-  req.file.filename = `user-${Date.now()}-${req.file.originalname}`;
+  req.file.filename = `post-${Date.now()}-${req.file.originalname}`;
   await sharp(req.file.buffer)
   .resize(500,500)
   .toFormat("jpeg")
   .jpeg({quality:90})
   .toFile(path.join(`public/images/posts/${req.file.filename}`))
+  next()
+};
+
+export const newsPhotoResize = async (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
+  if (!req.file) return next();
+  req.file.filename = `news-${Date.now()}-${req.file.originalname}`;
+  await sharp(req.file.buffer)
+  .resize(500,500)
+  .toFormat("jpeg")
+  .jpeg({quality:90})
+  .toFile(path.join(`public/images/news/${req.file.filename}`))
+  next()
+};
+
+export const analyzePhotoResize = async (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
+  if (!req.file) return next();
+  req.file.filename = `analyze-${Date.now()}-${req.file.originalname}`;
+  await sharp(req.file.buffer)
+  .resize(500,500)
+  .toFormat("jpeg")
+  .jpeg({quality:90})
+  .toFile(path.join(`public/images/analyze/${req.file.filename}`))
   next()
 };
