@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const postSchema = new mongoose.Schema(
+const analyzeSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -52,5 +52,5 @@ const postSchema = new mongoose.Schema(
   }
 );
 
-const Posts = mongoose.model("Post", postSchema);
-export default Posts;
+const Analysis = mongoose.model("Analyze", analyzeSchema);
+export default Analysis;

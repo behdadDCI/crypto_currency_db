@@ -59,3 +59,18 @@ export interface ICoin {
   price_change_percentage_24h_in_currency: number;
   price_change_percentage_7d_in_currency: number;
 }
+
+export interface IPost {
+  _id: string;
+  file:File;
+  title: string;
+  description: string;
+  isLiked: boolean;
+  isDisliked: boolean;
+  numViews: number;
+  likes: [];
+  disLikes: [];
+  user: string;
+  image: string;
+  updatedAt: string;
+}

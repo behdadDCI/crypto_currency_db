@@ -1,19 +1,20 @@
 import express from "express";
 import { verifyToken } from "../middlewares/token/verifyToken";
+import { createPost, getAllPosts } from "../controllers/postController";
 import {
-  createPost,
-  getAllPosts,
-  getAnalyzePosts,
-  getNewsPosts,
-  getusersPosts,
-} from "../controllers/postController";
+  photoUpload,
+  postPhotoResize,
+} from "../middlewares/upload/photoUpload";
 
 const router = express.Router();
 
-router.post("/api/v1/posts/create", verifyToken, createPost);
-router.get("/api/v1/posts", verifyToken, getAllPosts);
-router.get("/api/v1/posts/user-post", verifyToken, getusersPosts);
-router.get("/api/v1/posts/news", verifyToken, getNewsPosts);
-router.get("/api/v1/posts/analyze", verifyToken, getAnalyzePosts);
+router.post(
+  "/api/v1/posts/create",
+  verifyToken,
+ photoUpload.single("image"),
+  postPhotoResize,
+  createPost
+);
+router.get("/api/v1/posts", getAllPosts);
 
 export default router;
