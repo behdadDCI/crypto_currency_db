@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import News from "../models/newsModel";
 import fs from "fs";
 import { IPost } from "../interface";
 import Users from "../models/userModel";
@@ -46,6 +45,71 @@ export const createAnalyze = asyncHandler(
       fs.unlinkSync(localPath);
     } catch (error) {
       res.json(error);
+    }
+  }
+);
+
+//edit Post
+export const editAnalyze = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const userId = req.userId;
+    const targetUser = req.body.targetUser;
+    const userData = await Users.findById(userId);
+    blockUser(userData);
+    verifyUser(userData);
+    analysatorUser(userData)
+    if (targetUser === userId || userData.isAdmin) {
+      const { title, description, image, analyzeId } = req.body;
+      let imageUploadedUrl: string | undefined;
+      if (req.file) {
+        const localPath = `public/images/analyze/${req.file.filename}`;
+        const imageUploaded = await cloudinaryUploadImage(localPath);
+        imageUploadedUrl = imageUploaded.url;
+        fs.unlinkSync(localPath);
+      }
+      try {
+        const updateData: any = { title, description };
+        if (imageUploadedUrl) {
+          updateData.image = imageUploadedUrl;
+        } else if (image) {
+          updateData.image = image;
+        }
+        const analyze = await Analysis.findByIdAndUpdate(analyzeId, updateData, {
+          new: true,
+        });
+        res.json({ analyze: analyze, message: "Analyze edited successfully"  });
+      } catch (error) {
+        res.json(error);
+      }
+    }
+      else{
+        throw new Error("You are not authorized to edit this Analyze")
+      }
+    
+  }
+);
+
+//Delete Post
+export const deleteAnalyze = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const userId = req.userId;
+    const targetUser = req.body.targetUser;
+    const userData = await Users.findById(userId);
+    blockUser(userData);
+    verifyUser(userData);
+    analysatorUser(userData)
+    if (targetUser === userId || userData.isAdmin) {
+      const { AnalyzeId } = req.body;
+      try {
+        const analyze = await Analysis.findByIdAndDelete(AnalyzeId, {
+          new: true,
+        });
+        res.json({ analyze: analyze, message: "Analyze deleted successfully" });
+      } catch (error) {
+        res.json(error);
+      }
+    }else{
+      throw new Error("You are not authorized to delete this Analyze")
     }
   }
 );
