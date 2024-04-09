@@ -104,7 +104,7 @@ export const deleteAnalyze = asyncHandler(
         const analyze = await Analysis.findByIdAndDelete(postId, {
           new: true,
         });
-        res.json({ analyze: analyze, message: "Analyze deleted successfully" });
+        res.json({ _id:postId,analyze: analyze, message: "Analyze deleted successfully" });
       } catch (error) {
         res.json(error);
       }
