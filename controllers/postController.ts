@@ -56,7 +56,8 @@ export const editPost = asyncHandler(
     const userId = req.userId;
     const targetUser = req.body.targetUser;
     const userData = await Users.findById(userId);
-    console.log(targetUser);
+    console.log("userId: ",userId)
+    console.log("targetUser: ",targetUser);
     blockUser(userData);
     verifyUser(userData);
     if (targetUser === userId || userData.isAdmin) {
@@ -78,7 +79,7 @@ export const editPost = asyncHandler(
         const post = await Posts.findByIdAndUpdate(postId, updateData, {
           new: true,
         });
-        res.json({ post: post, message: "Post edited successfully" });
+        res.json({_id:postId, post: post, message: "Post edited successfully" });
       } catch (error) {
         res.json(error);
       }
