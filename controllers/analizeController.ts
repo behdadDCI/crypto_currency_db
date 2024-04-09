@@ -59,7 +59,7 @@ export const editAnalyze = asyncHandler(
     verifyUser(userData);
     analysatorUser(userData)
     if (targetUser === userId || userData.isAdmin) {
-      const { title, description, image, analyzeId } = req.body;
+      const { title, description, image, postId } = req.body;
       let imageUploadedUrl: string | undefined;
       if (req.file) {
         const localPath = `public/images/analyze/${req.file.filename}`;
@@ -74,10 +74,10 @@ export const editAnalyze = asyncHandler(
         } else if (image) {
           updateData.image = image;
         }
-        const analyze = await Analysis.findByIdAndUpdate(analyzeId, updateData, {
+        const analyze = await Analysis.findByIdAndUpdate(postId, updateData, {
           new: true,
         });
-        res.json({ analyze: analyze, message: "Analyze edited successfully"  });
+        res.json({_id:postId, analyze: analyze, message: "Analyze edited successfully"  });
       } catch (error) {
         res.json(error);
       }
@@ -99,9 +99,9 @@ export const deleteAnalyze = asyncHandler(
     verifyUser(userData);
     analysatorUser(userData)
     if (targetUser === userId || userData.isAdmin) {
-      const { AnalyzeId } = req.body;
+      const { postId } = req.body;
       try {
-        const analyze = await Analysis.findByIdAndDelete(AnalyzeId, {
+        const analyze = await Analysis.findByIdAndDelete(postId, {
           new: true,
         });
         res.json({ analyze: analyze, message: "Analyze deleted successfully" });
