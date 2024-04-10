@@ -11,7 +11,7 @@ import Users from "../models/userModel";
 interface CustomRequest extends Request {
   userId?: IPost;
   targetUser?: IPost;
-  postId?: IPost;
+  postIdPublic?: IPost;
 }
 
 //View all Posts
@@ -61,7 +61,7 @@ export const editPost = asyncHandler(
     blockUser(userData);
     verifyUser(userData);
     if (targetUser === userId || userData.isAdmin) {
-      const { title, description, image, postId } = req.body;
+      const { title, description, image, postIdPublic } = req.body;
       let imageUploadedUrl: string | undefined;
       if (req.file) {
         const localPath = `public/images/posts/${req.file.filename}`;
@@ -76,10 +76,10 @@ export const editPost = asyncHandler(
         } else if (image) {
           updateData.image = image;
         }
-        const post = await Posts.findByIdAndUpdate(postId, updateData, {
+        const post = await Posts.findByIdAndUpdate(postIdPublic, updateData, {
           new: true,
         });
-        res.json({_id:postId, post: post, message: "Post edited successfully" });
+        res.json({_id:postIdPublic, post: post, message: "Post edited successfully" });
       } catch (error) {
         res.json(error);
       }
@@ -95,7 +95,7 @@ export const deletePost = asyncHandler(
   async (req: CustomRequest, res: Response) => {
     console.log("first")
     const userId = req.userId;
-    const { postId, targetUser } = req.body;
+    const { postIdPublic, targetUser } = req.body;
 console.log(req.body)
     console.log("userId: ", userId);
     console.log("targetUser: ", targetUser);
@@ -103,12 +103,12 @@ console.log(req.body)
     blockUser(userData);
     verifyUser(userData);
     if (targetUser === userId || userData.isAdmin) {
-      console.log("postId: ", postId);
+      console.log("postId: ", postIdPublic);
       try {
-        const post = await Posts.findByIdAndDelete(postId, {
+        const post = await Posts.findByIdAndDelete(postIdPublic, {
           new: true,
         });
-        res.json({_id:postId, post: post, message: "Post deleted successfully" });
+        res.json({_id:postIdPublic, post: post, message: "Post deleted successfully" });
       } catch (error) {
         res.json(error);
       }

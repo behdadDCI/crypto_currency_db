@@ -57,7 +57,7 @@ export const editNews = asyncHandler(
     blockUser(userData);
     verifyUser(userData);
     adminUser(userData);
-    const { title, description, image, postId } = req.body;
+    const { title, description, image,  postIdPublic } = req.body;
     let imageUploadedUrl: string | undefined;
     if (req.file) {
       const localPath = `public/images/news/${req.file.filename}`;
@@ -72,11 +72,11 @@ export const editNews = asyncHandler(
       } else if (image) {
         updateData.image = image;
       }
-      const news = await News.findByIdAndUpdate(postId, updateData, {
+      const news = await News.findByIdAndUpdate(postIdPublic, updateData, {
         new: true,
       });
       res.json({
-        _id: postId,
+        _id: postIdPublic,
         news: news,
         message: "news edited successfully",
       });
@@ -94,13 +94,13 @@ export const deleteNews = asyncHandler(
     blockUser(userData);
     verifyUser(userData);
     adminUser(userData);
-    const { postId } = req.body;
+    const { postIdPublic } = req.body;
     try {
-      const news = await News.findByIdAndDelete(postId, {
+      const news = await News.findByIdAndDelete(postIdPublic, {
         new: true,
       });
       res.json({
-        _id: postId,
+        _id: postIdPublic,
         news: news,
         message: "news deleted successfully",
       });

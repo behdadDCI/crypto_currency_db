@@ -59,7 +59,7 @@ export const editAnalyze = asyncHandler(
     verifyUser(userData);
     analysatorUser(userData)
     if (targetUser === userId || userData.isAdmin) {
-      const { title, description, image, postId } = req.body;
+      const { title, description, image,  postIdPublic } = req.body;
       let imageUploadedUrl: string | undefined;
       if (req.file) {
         const localPath = `public/images/analyze/${req.file.filename}`;
@@ -74,10 +74,10 @@ export const editAnalyze = asyncHandler(
         } else if (image) {
           updateData.image = image;
         }
-        const analyze = await Analysis.findByIdAndUpdate(postId, updateData, {
+        const analyze = await Analysis.findByIdAndUpdate(postIdPublic, updateData, {
           new: true,
         });
-        res.json({_id:postId, analyze: analyze, message: "Analyze edited successfully"  });
+        res.json({_id:postIdPublic, analyze: analyze, message: "Analyze edited successfully"  });
       } catch (error) {
         res.json(error);
       }
@@ -99,12 +99,12 @@ export const deleteAnalyze = asyncHandler(
     verifyUser(userData);
     analysatorUser(userData)
     if (targetUser === userId || userData.isAdmin) {
-      const { postId } = req.body;
+      const { postIdPublic } = req.body;
       try {
-        const analyze = await Analysis.findByIdAndDelete(postId, {
+        const analyze = await Analysis.findByIdAndDelete(postIdPublic, {
           new: true,
         });
-        res.json({ _id:postId,analyze: analyze, message: "Analyze deleted successfully" });
+        res.json({ _id:postIdPublic,analyze: analyze, message: "Analyze deleted successfully" });
       } catch (error) {
         res.json(error);
       }
