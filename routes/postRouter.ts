@@ -5,6 +5,8 @@ import {
   deletePost,
   editPost,
   getAllPosts,
+  toggleDisikePost,
+  toggleLikePost,
 } from "../controllers/postController";
 import {
   photoUpload,
@@ -12,6 +14,10 @@ import {
 } from "../middlewares/upload/photoUpload";
 
 const router = express.Router();
+
+//like and dislike
+router.put("/api/v1/posts/likes",verifyToken,toggleLikePost)
+router.put("/api/v1/posts/dislikes",verifyToken,toggleDisikePost)
 
 router.post(
   "/api/v1/posts/create",

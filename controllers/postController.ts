@@ -7,6 +7,7 @@ import { IPost } from "../interface";
 import { cloudinaryUploadImage } from "../utils/cloudinary";
 import fs from "fs";
 import Users from "../models/userModel";
+import { loginUser } from "./userController";
 
 interface CustomRequest extends Request {
   userId?: IPost;
@@ -56,8 +57,8 @@ export const editPost = asyncHandler(
     const userId = req.userId;
     const targetUser = req.body.targetUser;
     const userData = await Users.findById(userId);
-    console.log("userId: ",userId)
-    console.log("targetUser: ",targetUser);
+    console.log("userId: ", userId);
+    console.log("targetUser: ", targetUser);
     blockUser(userData);
     verifyUser(userData);
     if (targetUser === userId || userData.isAdmin) {
@@ -79,7 +80,11 @@ export const editPost = asyncHandler(
         const post = await Posts.findByIdAndUpdate(postIdPublic, updateData, {
           new: true,
         });
-        res.json({_id:postIdPublic, post: post, message: "Post edited successfully" });
+        res.json({
+          _id: postIdPublic,
+          post: post,
+          message: "Post edited successfully",
+        });
       } catch (error) {
         res.json(error);
       }
@@ -91,12 +96,11 @@ export const editPost = asyncHandler(
 
 //Delete Post
 export const deletePost = asyncHandler(
-
   async (req: CustomRequest, res: Response) => {
-    console.log("first")
+    console.log("first");
     const userId = req.userId;
     const { postIdPublic, targetUser } = req.body;
-console.log(req.body)
+    console.log(req.body);
     console.log("userId: ", userId);
     console.log("targetUser: ", targetUser);
     const userData = await Users.findById(userId);
@@ -108,12 +112,90 @@ console.log(req.body)
         const post = await Posts.findByIdAndDelete(postIdPublic, {
           new: true,
         });
-        res.json({_id:postIdPublic, post: post, message: "Post deleted successfully" });
+        res.json({
+          _id: postIdPublic,
+          post: post,
+          message: "Post deleted successfully",
+        });
       } catch (error) {
         res.json(error);
       }
     } else {
       throw new Error("You are not authorized to delete this post");
+    }
+  }
+);
+
+export const toggleLikePost = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const { postIdPublic } = req.body;
+    const post = await Posts.findById(postIdPublic);
+    const userId = req.userId;
+    const isLiked = post.isLiked;
+    const alreadyDisliked = post.disLikes.find(
+      (userId) => userId.toString() === userId.toString()
+    );
+    if (alreadyDisliked) {
+      const post = await Posts.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { disLikes: userId },
+          isDisliked: false,
+        },
+        { new: true }
+      );
+    }
+    if(isLiked){
+      const post=await Posts.findByIdAndUpdate(postIdPublic,{
+        $pull:{likes:userId},
+        isLiked:false
+      },{
+        new:true
+      })
+    }else{
+      const post=await Posts.findByIdAndUpdate(postIdPublic,{
+        $push:{likes:userId},
+        isLiked:true
+      },{
+        new:true
+      })
+    }
+  }
+);
+
+export const toggleDisikePost = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const { postIdPublic } = req.body;
+    const post = await Posts.findById(postIdPublic);
+    const userId = req.userId;
+    const isDisliked = post.isDisliked;
+    const alreadyLiked = post.likes.find(
+      (userId) => userId.toString() === userId.toString()
+    );
+    if (alreadyLiked) {
+      const post = await Posts.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { likes: userId },
+          isLiked: false,
+        },
+        { new: true }
+      );
+    }
+    if(isDisliked){
+      const post=await Posts.findByIdAndUpdate(postIdPublic,{
+        $pull:{disLikes:userId},
+        isDisliked:false
+      },{
+        new:true
+      })
+    }else{
+      const post=await Posts.findByIdAndUpdate(postIdPublic,{
+        $push:{disLikes:userId},
+        isDisliked:true
+      },{
+        new:true
+      })
     }
   }
 );
