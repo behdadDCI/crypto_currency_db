@@ -113,3 +113,118 @@ export const deleteAnalyze = asyncHandler(
     }
   }
 );
+
+//like Analyze
+export const toggleLikeAnalyze = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const { postIdPublic } = req.body;
+    const analyze = await Analysis.findById(postIdPublic);
+    const userId = req.userId;
+    const userData = await Users.findById(userId);
+    verifyUser(userData);
+    const alreadyDisliked = analyze.disLikes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    const alreadyLiked = analyze.likes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    if (alreadyDisliked) {
+      await Analysis.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { disLikes: userId },
+        },
+        { new: true }
+      );
+    }
+    if (alreadyLiked) {
+      const analyze = await Analysis.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { likes: userId },
+        },
+        { new: true }
+      );
+      res.json({
+        _id: postIdPublic,
+        analyze: analyze,
+        message: "success",
+        isliked:false
+      });
+    } else {
+      const analyze = await Analysis.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $push: { likes: userId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json({
+        _id: postIdPublic,
+        analyze: analyze,
+        message: "success",
+        isLiked:true
+      });
+    }
+  }
+);
+
+//dislike Post
+export const toggleDisikeAnalyze = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const { postIdPublic } = req.body;
+    const analyze = await Analysis.findById(postIdPublic);
+    const userId = req.userId;
+    const userData = await Users.findById(userId);
+    verifyUser(userData);
+    const alreadyLiked = analyze.likes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    const alreadyDisliked = analyze.disLikes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    if (alreadyLiked) {
+      await Analysis.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { likes: userId },
+        },
+        { new: true }
+      );
+    }
+    if (alreadyDisliked) {
+      const analyze = await Analysis.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { disLikes: userId },
+        },
+        { new: true }
+      );
+      res.json({
+        _id: postIdPublic,
+        analyze: analyze,
+        message: "success",
+        isDisliked:false
+      });
+    } else {
+      const analyze = await Analysis.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $push: { disLikes: userId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json({
+        _id: postIdPublic,
+        analyze: analyze,
+        message: "success",
+        isDisliked:true
+      });
+    }
+  }
+);
+

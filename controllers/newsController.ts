@@ -57,7 +57,7 @@ export const editNews = asyncHandler(
     blockUser(userData);
     verifyUser(userData);
     adminUser(userData);
-    const { title, description, image,  postIdPublic } = req.body;
+    const { title, description, image, postIdPublic } = req.body;
     let imageUploadedUrl: string | undefined;
     if (req.file) {
       const localPath = `public/images/news/${req.file.filename}`;
@@ -106,6 +106,120 @@ export const deleteNews = asyncHandler(
       });
     } catch (error) {
       res.json(error);
+    }
+  }
+);
+
+//like Post
+export const toggleLikeNews = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const { postIdPublic } = req.body;
+    const news = await News.findById(postIdPublic);
+    const userId = req.userId;
+    const userData = await Users.findById(userId);
+    verifyUser(userData);
+    const alreadyDisliked = news.disLikes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    const alreadyLiked = news.likes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    if (alreadyDisliked) {
+      await News.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { disLikes: userId },
+        },
+        { new: true }
+      );
+    }
+    if (alreadyLiked) {
+      const news = await News.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { likes: userId },
+        },
+        { new: true }
+      );
+      res.json({
+        _id: postIdPublic,
+        news: news,
+        message: "success",
+        isliked: false,
+      });
+    } else {
+      const news = await News.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $push: { likes: userId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json({
+        _id: postIdPublic,
+        news: news,
+        message: "success",
+        isLiked: true,
+      });
+    }
+  }
+);
+
+//dislike Post
+export const toggleDisikeNews = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const { postIdPublic } = req.body;
+    const news = await News.findById(postIdPublic);
+    const userId = req.userId;
+    const userData = await Users.findById(userId);
+    verifyUser(userData);
+    const alreadyLiked = news.likes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    const alreadyDisliked = news.disLikes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    if (alreadyLiked) {
+      await News.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { likes: userId },
+        },
+        { new: true }
+      );
+    }
+    if (alreadyDisliked) {
+      const news = await News.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { disLikes: userId },
+        },
+        { new: true }
+      );
+      res.json({
+        _id: postIdPublic,
+        news: news,
+        message: "success",
+        isDisliked: false,
+      });
+    } else {
+      const news = await News.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $push: { disLikes: userId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json({
+        _id: postIdPublic,
+        news: news,
+        message: "success",
+        isDisliked: true,
+      });
     }
   }
 );

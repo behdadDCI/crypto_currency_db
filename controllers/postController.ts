@@ -100,14 +100,10 @@ export const deletePost = asyncHandler(
     console.log("first");
     const userId = req.userId;
     const { postIdPublic, targetUser } = req.body;
-    console.log(req.body);
-    console.log("userId: ", userId);
-    console.log("targetUser: ", targetUser);
     const userData = await Users.findById(userId);
     blockUser(userData);
     verifyUser(userData);
     if (targetUser === userId || userData.isAdmin) {
-      console.log("postId: ", postIdPublic);
       try {
         const post = await Posts.findByIdAndDelete(postIdPublic, {
           new: true,
@@ -126,76 +122,116 @@ export const deletePost = asyncHandler(
   }
 );
 
+//like Post
 export const toggleLikePost = asyncHandler(
   async (req: CustomRequest, res: Response) => {
     const { postIdPublic } = req.body;
     const post = await Posts.findById(postIdPublic);
     const userId = req.userId;
-    const isLiked = post.isLiked;
+    const userData = await Users.findById(userId);
+    verifyUser(userData);
     const alreadyDisliked = post.disLikes.find(
-      (userId) => userId.toString() === userId.toString()
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    const alreadyLiked = post.likes.find(
+      (loginId) => loginId.toString() === userId.toString()
     );
     if (alreadyDisliked) {
-      const post = await Posts.findByIdAndUpdate(
+      await Posts.findByIdAndUpdate(
         postIdPublic,
         {
           $pull: { disLikes: userId },
-          isDisliked: false,
         },
         { new: true }
       );
     }
-    if(isLiked){
-      const post=await Posts.findByIdAndUpdate(postIdPublic,{
-        $pull:{likes:userId},
-        isLiked:false
-      },{
-        new:true
-      })
-    }else{
-      const post=await Posts.findByIdAndUpdate(postIdPublic,{
-        $push:{likes:userId},
-        isLiked:true
-      },{
-        new:true
-      })
-    }
-  }
-);
-
-export const toggleDisikePost = asyncHandler(
-  async (req: CustomRequest, res: Response) => {
-    const { postIdPublic } = req.body;
-    const post = await Posts.findById(postIdPublic);
-    const userId = req.userId;
-    const isDisliked = post.isDisliked;
-    const alreadyLiked = post.likes.find(
-      (userId) => userId.toString() === userId.toString()
-    );
     if (alreadyLiked) {
       const post = await Posts.findByIdAndUpdate(
         postIdPublic,
         {
           $pull: { likes: userId },
-          isLiked: false,
+        },
+        { new: true }
+      );
+      res.json({
+        _id: postIdPublic,
+        post: post,
+        message: "success",
+        isliked:false
+      });
+    } else {
+      const post = await Posts.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $push: { likes: userId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json({
+        _id: postIdPublic,
+        post: post,
+        message: "success",
+        isLiked:true
+      });
+    }
+  }
+);
+
+//dislike Post
+export const toggleDisikePost = asyncHandler(
+  async (req: CustomRequest, res: Response) => {
+    const { postIdPublic } = req.body;
+    const post = await Posts.findById(postIdPublic);
+    const userId = req.userId;
+    const userData = await Users.findById(userId);
+    verifyUser(userData);
+    const alreadyLiked = post.likes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    const alreadyDisliked = post.disLikes.find(
+      (loginId) => loginId.toString() === userId.toString()
+    );
+    if (alreadyLiked) {
+      await Posts.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { likes: userId },
         },
         { new: true }
       );
     }
-    if(isDisliked){
-      const post=await Posts.findByIdAndUpdate(postIdPublic,{
-        $pull:{disLikes:userId},
+    if (alreadyDisliked) {
+      const post = await Posts.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $pull: { disLikes: userId },
+        },
+        { new: true }
+      );
+      res.json({
+        _id: postIdPublic,
+        post: post,
+        message: "success",
         isDisliked:false
-      },{
-        new:true
-      })
-    }else{
-      const post=await Posts.findByIdAndUpdate(postIdPublic,{
-        $push:{disLikes:userId},
+      });
+    } else {
+      const post = await Posts.findByIdAndUpdate(
+        postIdPublic,
+        {
+          $push: { disLikes: userId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json({
+        _id: postIdPublic,
+        post: post,
+        message: "success",
         isDisliked:true
-      },{
-        new:true
-      })
+      });
     }
   }
 );

@@ -9,14 +9,6 @@ const postSchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    isLiked: {
-      type: Boolean,
-      default: false,
-    },
-    isDisliked: {
-      type: Boolean,
-      default: false,
-    },
     numViews: {
       type: Number,
       default: 0,

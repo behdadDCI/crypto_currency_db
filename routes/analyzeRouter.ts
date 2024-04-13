@@ -5,6 +5,8 @@ import {
   deleteAnalyze,
   editAnalyze,
   getAllAnalysis,
+  toggleDisikeAnalyze,
+  toggleLikeAnalyze,
 } from "../controllers/analizeController";
 import {
   analyzePhotoResize,
@@ -12,6 +14,10 @@ import {
 } from "../middlewares/upload/photoUpload";
 
 const router = express.Router();
+
+//like and dislike
+router.put("/api/v1/analyze/likes",verifyToken,toggleLikeAnalyze)
+router.put("/api/v1/analyze/dislikes",verifyToken,toggleDisikeAnalyze)
 
 router.post(
   "/api/v1/analyze/create",
