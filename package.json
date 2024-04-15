@@ -1,7 +1,6 @@
 {
   "name": "crypto-currency-db",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
@@ -48,5 +47,6 @@
     "nodemailer": "^6.9.11",
     "sharp": "^0.33.2",
     "tsc-watch": "^6.0.4"
-  }
+  },
+  "description": ""
 }
